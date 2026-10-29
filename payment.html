@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+  <meta name="description"
+    content="Securely pay 3rd Eye Tech using Razorpay — cloud, server and technology services." />
+  <meta name="author" content="3rd Eye Tech" />
+  <title>Secure Payment — 3rd Eye Tech</title>
+
+  <!-- Favicon -->
+  <link rel="icon" href="./helo/logo.png" type="image/png" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+
+  <!-- Payment Page CSS -->
+  <link rel="stylesheet" href="css/payment.css" />
+
+  <!-- Razorpay Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+
+<body>
+
+  <!-- Animated Background -->
+  <div class="pay-page-bg" aria-hidden="true"></div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" role="region" aria-live="polite" aria-label="Notifications"></div>
+
+  <div class="pay-wrapper">
+
+    <!-- ── Navbar ── -->
+    <nav class="pay-nav" role="navigation" aria-label="Main navigation">
+      <a class="pay-nav-logo" href="index.html" aria-label="3rd Eye Tech Home">
+        <img src="./helo/logo.png" alt="3rd Eye Tech Logo" />
+      </a>
+      <div class="pay-nav-links">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="service.html">Services</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </nav>
+
+    <!-- ── Main ── -->
+    <main class="pay-main" id="payMain">
+      <div class="pay-card" id="payCard" role="main">
+
+        <!-- Card Header -->
+        <div class="pay-card-header">
+          <div class="pay-icon" aria-hidden="true">
+            <!-- Lock / Secure icon -->
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z" />
+            </svg>
+          </div>
+          <h1>Secure Payment</h1>
+          <p>3rd Eye Tech &nbsp;·&nbsp; Powered by Razorpay</p>
+        </div>
+
+        <!-- Card Body — Payment Form -->
+        <div class="pay-card-body" id="payFormSection">
+
+          <!-- Trust Badges -->
+          <div class="trust-row" aria-label="Security features">
+            <span class="trust-badge">
+              <!-- Shield icon -->
+              <svg viewBox="0 0 24 24">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+              </svg>
+              SSL Encrypted
+            </span>
+            <span class="trust-badge">
+              <!-- Verified icon -->
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82 1.89 3.2L12 21.04l3.4 1.47 1.89-3.2 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z" />
+              </svg>
+              RBI Compliant
+            </span>
+            <span class="trust-badge">
+              <!-- Flash icon -->
+              <svg viewBox="0 0 24 24">
+                <path d="M7 2v11h3v9l7-12h-4l4-8z" />
+              </svg>
+              Instant
+            </span>
+          </div>
+
+          <form id="paymentForm" novalidate>
+
+            <!-- Amount Field -->
+            <div class="form-group">
+              <label for="payAmount">Payment Amount</label>
+              <div class="input-wrap amount-wrap">
+                <span class="currency-prefix" aria-hidden="true">₹</span>
+                <input type="number" id="payAmount" name="amount" placeholder="0" min="1" step="1" inputmode="numeric"
+                  autocomplete="off" aria-label="Enter payment amount in rupees" aria-required="true"
+                  aria-describedby="amountError" />
+              </div>
+              <div class="field-error" id="amountError" role="alert">Please enter a valid amount (minimum ₹1).</div>
+
+              <!-- Quick amount chips -->
+              <div class="quick-amounts" role="group" aria-label="Quick select amount">
+                <button type="button" class="quick-chip" data-amount="500" id="chip500">₹500</button>
+                <button type="button" class="quick-chip" data-amount="1000" id="chip1000">₹1,000</button>
+                <button type="button" class="quick-chip" data-amount="2500" id="chip2500">₹2,500</button>
+                <button type="button" class="quick-chip" data-amount="5000" id="chip5000">₹5,000</button>
+                <button type="button" class="quick-chip" data-amount="10000" id="chip10000">₹10,000</button>
+              </div>
+            </div>
+
+            <!-- Name Field -->
+            <div class="form-group">
+              <label for="payName">Your Name <span style="font-weight:400;text-transform:none;font-size:.75rem;color:#9ca3af;">(optional)</span></label>
+              <div class="input-wrap">
+                <!-- Person icon -->
+                <svg class="input-icon" viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;">
+                  <path
+                    d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+                </svg>
+                <input type="text" id="payName" name="name" placeholder="Full name (optional)" autocomplete="name"
+                  aria-label="Your full name" aria-describedby="nameError" />
+              </div>
+              <div class="field-error" id="nameError" role="alert">Please enter at least 2 characters.</div>
+            </div>
+
+            <!-- Email Field -->
+            <div class="form-group">
+              <label for="payEmail">Email Address <span style="font-weight:400;text-transform:none;font-size:.75rem;color:#9ca3af;">(optional)</span></label>
+              <div class="input-wrap">
+                <!-- Email icon -->
+                <svg class="input-icon" viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;">
+                  <path
+                    d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
+                </svg>
+                <input type="email" id="payEmail" name="email" placeholder="email@example.com (optional)" autocomplete="email"
+                  aria-label="Your email address" aria-describedby="emailError" />
+              </div>
+              <div class="field-error" id="emailError" role="alert">Please enter a valid email address.</div>
+            </div>
+
+            <!-- Phone Field -->
+            <div class="form-group">
+              <label for="payPhone">Phone Number</label>
+              <div class="input-wrap">
+                <!-- Phone icon -->
+                <svg class="input-icon" viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;">
+                  <path
+                    d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.57 1 1 0 01-.25 1.01l-2.2 2.21z" />
+                </svg>
+                <input type="tel" id="payPhone" name="phone" placeholder="+91 98765 43210" autocomplete="tel"
+                  inputmode="tel" aria-label="Your phone number" aria-describedby="phoneError" />
+              </div>
+              <div class="field-error" id="phoneError" role="alert">Please enter a valid 10-digit phone number.</div>
+            </div>
+
+            <!-- Purpose/Notes Field -->
+            <div class="form-group">
+              <label for="payNote">Purpose / Note <span
+                  style="font-weight:400;text-transform:none;font-size:.75rem;color:#9ca3af;">(optional)</span></label>
+              <div class="input-wrap">
+                <!-- Note icon -->
+                <svg class="input-icon" viewBox="0 0 24 24"
+                  style="width:18px;height:18px;fill:currentColor;top:18px;transform:none;">
+                  <path
+                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                </svg>
+                <textarea id="payNote" name="note" rows="2" placeholder="e.g. Cloud Server Plan, Invoice #1234…"
+                  aria-label="Purpose or note for this payment" style="padding-top:14px;"></textarea>
+              </div>
+            </div>
+
+            <div class="pay-divider">Proceed to Pay</div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="payBtn" aria-label="Pay now with Razorpay">
+              <div class="btn-spinner" id="btnSpinner" aria-hidden="true"></div>
+              <svg id="btnLockIcon" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z" />
+              </svg>
+              <span id="btnText">Pay Now</span>
+            </button>
+
+            <!-- Razorpay trust line -->
+            <div class="rzp-badge">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+              </svg>
+              Secured by Razorpay &nbsp;|&nbsp; 256-bit SSL Encryption
+            </div>
+
+          </form>
+        </div>
+
+        <!-- ── Success Screen (hidden initially) ── -->
+        <div class="pay-success" id="successSection" aria-live="polite">
+          <div class="success-ring" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+            </svg>
+          </div>
+          <h2>Payment Successful! 🎉</h2>
+          <p class="success-sub">
+            Your payment has been verified and confirmed.<br />
+            A confirmation will be sent to your email shortly.
+          </p>
+
+          <div class="success-details" id="successDetails" aria-label="Payment receipt">
+            <!-- Populated by JS -->
+          </div>
+
+          <button class="btn-new-payment" id="newPaymentBtn" type="button" aria-label="Make another payment">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff;" aria-hidden="true">
+              <path
+                d="M19 3H5c-1.11 0-2 .89-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 3a2 2 0 110 4 2 2 0 010-4zm4 12H8v-.57c0-2 2.67-3.12 4-3.12s4 1.11 4 3.12V18z" />
+            </svg>
+            Make Another Payment
+          </button>
+        </div>
+
+      </div><!-- /pay-card -->
+    </main>
+
+    <!-- ── Footer ── -->
+    <footer class="pay-footer">
+      &copy; <span id="footerYear"></span> 3rd Eye Tech. All rights reserved. &nbsp;·&nbsp;
+      <a href="contact.html">Contact Support</a> &nbsp;·&nbsp;
+      <a href="index.html">Back to Home</a>
+    </footer>
+
+  </div><!-- /pay-wrapper -->
+
+
+  <!-- Razorpay SDK (in head) loads first, then payment.js runs after DOM is ready -->
+  <script src="js/payment.js"></script>
+
+</body>
+
+</html>
