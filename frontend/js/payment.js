@@ -240,18 +240,18 @@ form.addEventListener('submit', async (e) => {
         },
       }),
     });
-    console.log(orderRes);
+    // console.log(orderRes);
 
     const orderData = await orderRes.json();
     if (!orderRes.ok || !orderData.success) {
       throw new Error(orderData.message || 'Failed to create order.');
     }
-    console.log(orderData);
+    // console.log(orderData);
 
 
     const { order, key } = orderData;
     setLoading(false);
-    console.log(order);
+    // console.log(order);
 
 
     // ── Step 2: Open Razorpay Checkout Modal ───────────────────
