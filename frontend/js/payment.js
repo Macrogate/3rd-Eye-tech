@@ -84,29 +84,31 @@ function clearError(fieldId) {
 function validateForm() {
   let valid = true;
 
-  // Amount — the ONLY required field
+  // Amount — required
   const amount = parseFloat(amountInput.value);
   if (!amountInput.value || isNaN(amount) || amount < 1) {
     showError('payAmount', 'amountError');
     valid = false;
   }
 
-  // Email — optional, but if provided it must be a valid format
-  if (emailInput.value.trim()) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(emailInput.value.trim())) {
-      showError('payEmail', 'emailError');
-      valid = false;
-    }
+  // Name — required, at least 2 characters
+  if (nameInput.value.trim().length < 2) {
+    showError('payName', 'nameError');
+    valid = false;
   }
 
-  // Phone — optional, but if provided must be 10–13 digits
-  if (phoneInput.value.trim()) {
-    const digits = phoneInput.value.replace(/\D/g, '');
-    if (digits.length < 10 || digits.length > 13) {
-      showError('payPhone', 'phoneError');
-      valid = false;
-    }
+  // Email — required and must be a valid format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailInput.value.trim() || !emailRegex.test(emailInput.value.trim())) {
+    showError('payEmail', 'emailError');
+    valid = false;
+  }
+
+  // Phone — required and must be 10–13 digits
+  const digits = phoneInput.value.replace(/\D/g, '');
+  if (!phoneInput.value.trim() || digits.length < 10 || digits.length > 13) {
+    showError('payPhone', 'phoneError');
+    valid = false;
   }
 
   return valid;

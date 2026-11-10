@@ -119,30 +119,30 @@
 
             <!-- Name Field -->
             <div class="form-group">
-              <label for="payName">Your Name <span style="font-weight:400;text-transform:none;font-size:.75rem;color:#9ca3af;">(optional)</span></label>
+              <label for="payName">Your Name</label>
               <div class="input-wrap">
                 <!-- Person icon -->
                 <svg class="input-icon" viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;">
                   <path
                     d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
                 </svg>
-                <input type="text" id="payName" name="name" placeholder="Full name (optional)" autocomplete="name"
-                  aria-label="Your full name" aria-describedby="nameError" />
+                <input type="text" id="payName" name="name" placeholder="Full name" autocomplete="name"
+                  aria-label="Your full name" aria-required="true" aria-describedby="nameError" required />
               </div>
-              <div class="field-error" id="nameError" role="alert">Please enter at least 2 characters.</div>
+              <div class="field-error" id="nameError" role="alert">Please enter your full name (at least 2 characters).</div>
             </div>
 
             <!-- Email Field -->
             <div class="form-group">
-              <label for="payEmail">Email Address <span style="font-weight:400;text-transform:none;font-size:.75rem;color:#9ca3af;">(optional)</span></label>
+              <label for="payEmail">Email Address</label>
               <div class="input-wrap">
                 <!-- Email icon -->
                 <svg class="input-icon" viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;">
                   <path
                     d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                 </svg>
-                <input type="email" id="payEmail" name="email" placeholder="email@example.com (optional)" autocomplete="email"
-                  aria-label="Your email address" aria-describedby="emailError" />
+                <input type="email" id="payEmail" name="email" placeholder="email@example.com" autocomplete="email"
+                  aria-label="Your email address" aria-required="true" aria-describedby="emailError" required />
               </div>
               <div class="field-error" id="emailError" role="alert">Please enter a valid email address.</div>
             </div>
@@ -157,7 +157,7 @@
                     d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.47 11.47 0 00.57 3.57 1 1 0 01-.25 1.01l-2.2 2.21z" />
                 </svg>
                 <input type="tel" id="payPhone" name="phone" placeholder="+91 98765 43210" autocomplete="tel"
-                  inputmode="tel" aria-label="Your phone number" aria-describedby="phoneError" />
+                  inputmode="tel" aria-label="Your phone number" aria-required="true" aria-describedby="phoneError" required />
               </div>
               <div class="field-error" id="phoneError" role="alert">Please enter a valid 10-digit phone number.</div>
             </div>
