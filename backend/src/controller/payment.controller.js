@@ -1,9 +1,12 @@
+"use strict";
+
 const paymentService = require("../services.js/payment.service");
 const { verifyPaymentSignature, verifyWebhookSignature } = require("../utils/paymentSignature");
+const db = require("../db/queries");
 
 // ─────────────────────────────────────────────────────────────
 // POST /api/payment/create-order
-// Body: { amount, currency?, receipt?, notes? }
+// Body: { amount, currency?, receipt?, notes?, name?, email?, phone? }
 // ─────────────────────────────────────────────────────────────
 const createOrder = async (req, res, next) => {
   try {
@@ -16,13 +19,27 @@ const createOrder = async (req, res, next) => {
       });
     }
 
-    const order = await paymentService.createOrder({ amount, currency, receipt, notes });
+    // The frontend sends name/email/phone inside the notes object.
+    // We read them from there so they are also saved as dedicated DB columns.
+    const customer_name  = notes?.name  || null;
+    const customer_email = notes?.email || null;
+    const customer_phone = notes?.phone || null;
+
+    const order = await paymentService.createOrder({
+      amount,
+      currency,
+      receipt,
+      notes,
+      customer_name,
+      customer_email,
+      customer_phone,
+    });
 
     return res.status(201).json({
       success: true,
       message: "Order created successfully.",
       order,
-      key: process.env.RAZORPAY_KEY_ID, // sent to frontend for Razorpay checkout initialisation
+      key: process.env.RAZORPAY_KEY_ID,
     });
   } catch (error) {
     next(error);
@@ -51,13 +68,15 @@ const verifyPayment = async (req, res, next) => {
     );
 
     if (!isValid) {
+      // Mark the order as failed in DB on bad signature
+      await db.updateOrderStatus(razorpay_order_id, "failed").catch(() => {});
       return res.status(400).json({
         success: false,
         message: "Payment signature verification failed. Payment is invalid.",
       });
     }
 
-    // ── Fetch full payment details from Razorpay ──
+    // Fetch payment from Razorpay; service also persists it to DB
     const payment = await paymentService.fetchPayment(razorpay_payment_id);
 
     return res.status(200).json({
@@ -144,7 +163,7 @@ const refundPayment = async (req, res, next) => {
 // Razorpay sends events here. Validate with webhook secret.
 // NOTE: This route MUST receive the raw body (not JSON-parsed).
 // ─────────────────────────────────────────────────────────────
-const handleWebhook = (req, res, next) => {
+const handleWebhook = async (req, res, next) => {
   try {
     const webhookSign = req.headers["x-razorpay-signature"];
 
@@ -168,31 +187,60 @@ const handleWebhook = (req, res, next) => {
     console.log(`[Webhook] Received event: ${event.event}`);
 
     switch (event.event) {
-      case "payment.captured":
-        // TODO: Update order status to "paid" in your database
-        console.log("[Webhook] Payment captured:", event.payload.payment.entity.id);
+      case "payment.captured": {
+        const p = event.payload.payment.entity;
+        console.log("[Webhook] Payment captured:", p.id);
+        // Persist payment + mark order paid
+        await db.insertPayment({
+          razorpay_payment_id: p.id,
+          razorpay_order_id: p.order_id,
+          amount: p.amount,
+          currency: p.currency,
+          status: p.status,
+          method: p.method,
+          email: p.email,
+          contact: p.contact,
+        }).catch((err) => console.error("[Webhook] DB insertPayment error:", err.message));
+        await db.updateOrderStatus(p.order_id, "paid")
+          .catch((err) => console.error("[Webhook] DB updateOrderStatus error:", err.message));
         break;
+      }
 
-      case "payment.failed":
-        // TODO: Mark order as failed in your database
-        console.log("[Webhook] Payment failed:", event.payload.payment.entity.id);
+      case "payment.failed": {
+        const p = event.payload.payment.entity;
+        console.log("[Webhook] Payment failed:", p.id);
+        await db.updateOrderStatus(p.order_id, "failed")
+          .catch((err) => console.error("[Webhook] DB updateOrderStatus error:", err.message));
         break;
+      }
 
-      case "refund.created":
-        // TODO: Update refund record in your database
-        console.log("[Webhook] Refund created:", event.payload.refund.entity.id);
+      case "refund.created": {
+        const r = event.payload.refund.entity;
+        console.log("[Webhook] Refund created:", r.id);
+        await db.insertRefund({
+          razorpay_refund_id: r.id,
+          razorpay_payment_id: r.payment_id,
+          amount: r.amount,
+          status: r.status,
+          speed: r.speed_requested || "normal",
+          notes: r.notes || {},
+        }).catch((err) => console.error("[Webhook] DB insertRefund error:", err.message));
         break;
+      }
 
-      case "order.paid":
-        // TODO: Fulfil the order in your database
-        console.log("[Webhook] Order paid:", event.payload.order.entity.id);
+      case "order.paid": {
+        const o = event.payload.order.entity;
+        console.log("[Webhook] Order paid:", o.id);
+        await db.updateOrderStatus(o.id, "paid")
+          .catch((err) => console.error("[Webhook] DB updateOrderStatus error:", err.message));
         break;
+      }
 
       default:
         console.log(`[Webhook] Unhandled event type: ${event.event}`);
     }
 
-    // Razorpay expects a 200 response to acknowledge receipt
+    // Razorpay expects a 200 to acknowledge receipt
     return res.status(200).json({ success: true, received: true });
   } catch (error) {
     next(error);
