@@ -25,7 +25,7 @@ const { pool } = require("../config/db");
  * @param {string} [p.customer_name]
  * @param {string} [p.customer_email]
  * @param {string} [p.customer_phone]
- * @param {object} [p.notes]
+ * @param {object} [p.notes]          - Stored as plain text (purpose field extracted)
  * @returns {Promise<object>}  Inserted row
  */
 const insertOrder = async ({
@@ -41,13 +41,13 @@ const insertOrder = async ({
   // Razorpay sends amounts in paise (smallest unit). Convert to rupees for readability.
   const amountInRupees = Math.round(amount) / 100;
 
-  // Save ONLY the note (as { purpose: ... }) in the notes JSON column
+  // Save ONLY the purpose text in the notes TEXT column
   let dbNotes = null;
   if (notes && typeof notes === "object") {
     const purpose = notes.purpose || notes.note || null;
-    dbNotes = purpose ? JSON.stringify({ purpose }) : null;
+    dbNotes = purpose ? String(purpose).trim() : null;
   } else if (typeof notes === "string" && notes.trim()) {
-    dbNotes = JSON.stringify({ purpose: notes.trim() });
+    dbNotes = notes.trim();
   }
 
   const { rows } = await pool.query(
@@ -195,7 +195,7 @@ const findPaymentsByOrderId = async (razorpay_order_id) => {
  * @param {number} p.amount
  * @param {string} p.status
  * @param {string} p.speed
- * @param {object} [p.notes]
+ * @param {object} [p.notes]          - Stored as plain text (purpose field extracted)
  * @returns {Promise<object>}  Inserted row
  */
 const insertRefund = async ({
@@ -221,7 +221,11 @@ const insertRefund = async ({
       amountInRupees,
       status || "created",
       speed || "normal",
-      notes ? JSON.stringify(notes) : null,
+      notes
+        ? (typeof notes === "object"
+            ? String(notes.purpose || notes.note || JSON.stringify(notes)).trim() || null
+            : String(notes).trim() || null)
+        : null,
     ]
   );
   return rows[0];

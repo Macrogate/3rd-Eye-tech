@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS orders (
   customer_name       VARCHAR(128),
   customer_email      VARCHAR(256),
   customer_phone      VARCHAR(20),
-  notes               JSONB,
+  notes               TEXT,
   created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW(),
   updated_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS refunds (
   amount              NUMERIC(10,2)   NOT NULL,          -- in RUPEES (₹)
   status              VARCHAR(32)     NOT NULL DEFAULT 'created', -- created | processed | failed
   speed               VARCHAR(16)     NOT NULL DEFAULT 'normal',
-  notes               JSONB,
+  notes               TEXT,
   created_at          TIMESTAMPTZ     NOT NULL DEFAULT NOW()
 );
 
